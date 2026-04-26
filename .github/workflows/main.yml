@@ -26,9 +26,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
-
-      - name: Unzip project
-        run: unzip customersupportbot.zip
       - name: Debug files
         run: |
           pwd
@@ -37,11 +34,11 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ./customer-supportBOT/Backend
+        working-directory: ./chatbotcode/Backend
 
       - name: Start app
         run: npm start &
-        working-directory: ./customer-supportBOT/Backend
+        working-directory: ./chatboycode/Backend
 
       - name: Test
         run: curl http://localhost:3000
