@@ -1,4 +1,4 @@
-# Use official Node.js runtime as parent image
+ # Use official Node.js runtime as parent image
 FROM node:20-alpine
 
 # Set working directory
