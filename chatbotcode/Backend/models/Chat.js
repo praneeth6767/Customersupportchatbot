@@ -10,4 +10,4 @@ const ChatSchema = new mongoose.Schema({
   escalated: { type: Boolean, default: false }
 });
 
-module.exports = mongoose.model('chat', ChatSchema);
+module.exports = mongoose.model('Chat', ChatSchema);
