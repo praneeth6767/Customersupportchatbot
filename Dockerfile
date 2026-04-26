@@ -5,7 +5,7 @@ FROM node:20-alpine
 WORKDIR /usr/src/app
 
 # Copy dependency manifests
-COPY Backend/package*.json ./
+COPY Backend/package.json ./
 
 # Install dependencies
 RUN npm install
