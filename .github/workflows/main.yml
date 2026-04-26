@@ -41,7 +41,7 @@ jobs:
         working-directory: ./chatbotcode/Backend
 
       - name: Test
-        run: curl http://localhost:3000
+        run: curl http://localhost:5000
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
