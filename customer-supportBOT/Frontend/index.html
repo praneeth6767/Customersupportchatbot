@@ -1,0 +1,228 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Support Bot</title>
+
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h2 {
+      color: #333;
+      margin-top: 20px;
+    }
+
+    .chat-container {
+      background: #fff;
+      width: 90%;
+      max-width: 500px;
+      height: 80vh;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    #chatMessages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      margin: 10px 0;
+      padding: 10px 15px;
+      border-radius: 15px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .user {
+      background: #0078ff;
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 2px;
+    }
+
+    .bot {
+      background: #f0f0f0;
+      color: #333;
+      align-self: flex-start;
+      border-bottom-left-radius: 2px;
+    }
+
+    .chat-input-area {
+      display: flex;
+      border-top: 1px solid #ddd;
+      padding: 10px;
+      background: #fafafa;
+    }
+
+    #chatInput {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 10px;
+      font-size: 15px;
+      border-radius: 8px;
+      background: #f4f4f4;
+    }
+
+    #sendBtn {
+      background: #0078ff;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    #sendBtn:hover {
+      background: #005fcc;
+    }
+
+    #suggestionsContainer {
+      padding: 10px;
+      background: #f9fafb;
+      border-top: 1px solid #eee;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .suggestion {
+      background: #e6f0ff;
+      color: #0044cc;
+      padding: 6px 12px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.3s;
+    }
+
+    .suggestion:hover {
+      background: #cce0ff;
+    }
+  </style>
+</head>
+<body>
+  <h2>💬 Customer Support Chatbot</h2>
+
+  <div class="chat-container">
+    <div id="chatMessages"></div>
+
+    <div id="suggestionsContainer"></div>
+
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Type your message..." />
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+
+  <script>
+  const chatMessages = document.getElementById('chatMessages');
+  const chatInput = document.getElementById('chatInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const suggestionsContainer = document.getElementById('suggestionsContainer');
+
+  // Send message
+  async function sendMessage(message) {
+    if (!message.trim()) return;
+
+    appendMessage(message, 'user');
+    chatInput.value = '';
+
+    try {
+      const res = await fetch('http://localhost:5000/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        appendMessage("⚠️ Something went wrong. Please try again.", 'bot');
+        return;
+      }
+
+      // Display bot response + intent + language
+      appendBotMessage(data.response, data.intent, data.language);
+      showSuggestions(data.suggestions);
+
+    } catch (err) {
+      appendMessage("❌ Server not responding. Try again later.", 'bot');
+    }
+
+    scrollToBottom();
+  }
+
+  // Append user/bot messages (basic)
+  function appendMessage(message, sender) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${sender}`;
+    messageDiv.innerHTML = message;
+    chatMessages.appendChild(messageDiv);
+    scrollToBottom();
+  }
+
+  // Append bot message with intent + language info
+  function appendBotMessage(response, intent, language) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message bot';
+    messageDiv.innerHTML = `
+      <div>${response}</div>
+      <div style="font-size: 12px; color: #666; margin-top: 5px;">
+        <b>Intent:</b> ${intent || 'N/A'} &nbsp; | &nbsp;
+        <b>Language:</b> ${language || 'N/A'}
+      </div>
+    `;
+    chatMessages.appendChild(messageDiv);
+    scrollToBottom();
+  }
+
+  // Scroll only if near bottom
+  function scrollToBottom() {
+    const isNearBottom =
+      chatMessages.scrollHeight - chatMessages.scrollTop <= chatMessages.clientHeight + 100;
+
+    if (isNearBottom) {
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+  }
+
+  // Show suggestion buttons
+  function showSuggestions(suggestions = []) {
+    suggestionsContainer.innerHTML = '';
+    suggestions.forEach(text => {
+      const btn = document.createElement('div');
+      btn.className = 'suggestion';
+      btn.textContent = text;
+      btn.onclick = () => sendMessage(text);
+      suggestionsContainer.appendChild(btn);
+    });
+  }
+
+  // Event listeners
+  sendBtn.addEventListener('click', () => sendMessage(chatInput.value));
+  chatInput.addEventListener('keypress', e => {
+    if (e.key === 'Enter') sendMessage(chatInput.value);
+  });
+</script>
+
+</body>
+</html>
