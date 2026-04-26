@@ -28,3 +28,8 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/node-app:latest
+      
+      - name: Run containter(test)
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME}}/node-app:latest
+          docker run -d -p 5000:5000 --name node-app ${{ secrets.DOCKER_USERNAME }}/node-app:latest
