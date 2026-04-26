@@ -11,7 +11,7 @@ COPY ./chatbotcode/Backend/package.json ./
 RUN npm install 
 
 # Copy application source code
-COPY . .
+COPY ./chatbotcode/Backend .
 
 # Expose port and run the app
 EXPOSE 5000
