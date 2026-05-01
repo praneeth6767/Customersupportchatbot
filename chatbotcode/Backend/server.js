@@ -13,6 +13,16 @@
       app.use(cors());
       app.use(express.json());
 
+      const path = require('path');
+
+      // Serve static files (your frontend)
+      app.use(express.static(path.join(__dirname, '../Frontend')));
+
+      // Route for index.html
+      app.get('/', (req, res) => {
+       res.sendFile(path.join(__dirname, '../Frontend/index.html'));
+      });
+
       // ===== 1. MongoDB Connection =====
       mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
         .then(() => console.log("✅ MongoDB connected"))
