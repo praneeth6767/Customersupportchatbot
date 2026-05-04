@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-deployment
+  labels:
+    app: node-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: node-app
+  template:
+    metadata:
+      labels:
+        app: node-app
+    spec:
+      containers:
+      - name: node
+        image: docker.io/praneethuser/node-app:latest # The image to pull
+        imagePullPolicy: Always # Options: Always, IfNotPresent, Never
+        ports:
+        - containerPort: 5000
