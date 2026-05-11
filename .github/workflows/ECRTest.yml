@@ -33,7 +33,7 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        docker build -t web-app:latest 
+        docker build -t web-app:latest .
 
     - name: Tag Image for ECR
       run: |
