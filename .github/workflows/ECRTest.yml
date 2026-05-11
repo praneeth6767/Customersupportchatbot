@@ -27,6 +27,17 @@ jobs:
     - name: Verify AWS Identity
       run: aws sts get-caller-identity
 
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Terraform Init
+      working-directory: terraform-manifests
+      run: terraform init
+
+    - name: Terraform Apply
+      working-directory: terraform-manifests
+      run: terraform apply -auto-approve
+
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
@@ -45,13 +56,4 @@ jobs:
         docker push \
         ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:latest
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-
-    - name: Terraform Init
-      working-directory: terraform-manifests
-      run: terraform init
-
-    - name: Terraform Apply
-      working-directory: terraform-manifests
-      run: terraform apply -auto-approve
+   
